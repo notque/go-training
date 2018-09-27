@@ -1,17 +1,18 @@
 package main
 
 import (
-	"strings"
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"path/filepath"
-	"io/ioutil"
-	"encoding/json"
+	"strings"
+
 	//"github.com/davecgh/go-spew/spew"
 	"sort"
 )
 
-func run(a *AllRuns) (*AllRuns) {
+func run(a *AllRuns) *AllRuns {
 	searchDir := "C:/slay"
 
 	fileList := make([]string, 0)
@@ -19,7 +20,7 @@ func run(a *AllRuns) (*AllRuns) {
 		fileList = append(fileList, path)
 		return err
 	})
-	
+
 	if e != nil {
 		panic(e)
 	}
@@ -27,16 +28,16 @@ func run(a *AllRuns) (*AllRuns) {
 	for _, file := range fileList {
 		//fmt.Println(file)
 		file, e := ioutil.ReadFile(file)
-    	if e != nil {
-        	fmt.Printf("File error: %v\n", e)
-        	//os.Exit(1)
-    	}
-    	//fmt.Printf("%s\n", string(file))
+		if e != nil {
+			fmt.Printf("File error: %v\n", e)
+			//os.Exit(1)
+		}
+		//fmt.Printf("%s\n", string(file))
 		var c STSRun
-   	 	err := json.Unmarshal(file, &c)
+		err := json.Unmarshal(file, &c)
 		if err != nil {
 			fmt.Println(err)
-		}	
+		}
 		analyze(c, a)
 		//spew.Dump(c)
 	}
@@ -46,7 +47,7 @@ func run(a *AllRuns) (*AllRuns) {
 
 func analyze(c STSRun, a *AllRuns) {
 	if c.IsDaily == false && c.IsAscensionMode == true {
-		fmt.Printf("Analyzing Run: Reached Floor: %d\n", c.FloorReached )
+		fmt.Printf("Analyzing Run: Reached Floor: %d\n", c.FloorReached)
 		fmt.Printf("Killed By: %s\n", c.KilledBy)
 		fmt.Printf("Purchased %v\n", c.ItemsPurchased)
 		if c.Victory == true {
@@ -74,22 +75,22 @@ func analyze(c STSRun, a *AllRuns) {
 
 func sortMap(m map[string]int) {
 	type kv struct {
-        Key   string
-        Value int
-    }
+		Key   string
+		Value int
+	}
 
-    var ss []kv
-    for k, v := range m {
-        ss = append(ss, kv{k, v})
-    }
+	var ss []kv
+	for k, v := range m {
+		ss = append(ss, kv{k, v})
+	}
 
-    sort.Slice(ss, func(i, j int) bool {
-        return ss[i].Value > ss[j].Value
-    })
+	sort.Slice(ss, func(i, j int) bool {
+		return ss[i].Value > ss[j].Value
+	})
 
-    for _, kv := range ss {
-        fmt.Printf("%s, %d\n", kv.Key, kv.Value)
-    }
+	for _, kv := range ss {
+		fmt.Printf("%s, %d\n", kv.Key, kv.Value)
+	}
 }
 
 func main() {
@@ -106,21 +107,21 @@ func main() {
 }
 
 func NewAllRuns() *AllRuns {
-	return &AllRuns{ 
-		KilledBy: make(map[string]int),
+	return &AllRuns{
+		KilledBy:        make(map[string]int),
 		ItemsPurchasedW: make(map[string]int),
 		ItemsPurchasedL: make(map[string]int),
-		MasterDeckW: make(map[string]int),
-		MasterDeckL: make(map[string]int),	
+		MasterDeckW:     make(map[string]int),
+		MasterDeckL:     make(map[string]int),
 	}
 }
 
 type AllRuns struct {
-	KilledBy map[string]int
+	KilledBy        map[string]int
 	ItemsPurchasedW map[string]int
 	ItemsPurchasedL map[string]int
-	MasterDeckW map[string]int
-	MasterDeckL map[string]int
+	MasterDeckW     map[string]int
+	MasterDeckL     map[string]int
 }
 
 type STSRun struct {

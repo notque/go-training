@@ -16,9 +16,9 @@ func main() {
 			fmt.Printf("String contains:\n")
 		}
 		count := wordcount(stuff, s)
-		fmt.Printf("%s %d times\n", s, count) 
+		fmt.Printf("%s %d times\n", s, count)
 	}
-	
+
 	fmt.Printf(stuff[0:6])
 }
 
